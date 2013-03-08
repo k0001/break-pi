@@ -1,6 +1,13 @@
 
 Discarded input sections
 
+ .bss           0x0000000000000000        0x0 build/gpio.o
+ .ARM.attributes
+                0x0000000000000000        0x0 build/gpio.o
+ .glue_7        0x0000000000000000        0x0 build/gpio.o
+ .glue_7t       0x0000000000000000        0x0 build/gpio.o
+ .vfp11_veneer  0x0000000000000000        0x0 build/gpio.o
+ .v4_bx         0x0000000000000000        0x0 build/gpio.o
  .bss           0x0000000000000000        0x0 build/main.o
  .ARM.attributes
                 0x0000000000000000        0x0 build/main.o
@@ -16,20 +23,26 @@ Name             Origin             Length             Attributes
 
 Linker script and memory map
 
+LOAD build/gpio.o
 LOAD build/main.o
 
-.init           0x0000000000000000       0x38
+.init           0x0000000000000000        0x4
  *(.init)
- .init          0x0000000000000000       0x38 build/main.o
+ .init          0x0000000000000000        0x4 build/main.o
                 0x0000000000000000                _start
 
-.text           0x0000000000008000        0x0
+.text           0x0000000000008000       0xd4
  *(.text)
- .text          0x0000000000008000        0x0 build/main.o
+ .text          0x0000000000008000       0x98 build/gpio.o
+                0x0000000000008008                SetGpioFunction
+                0x0000000000008000                GetGpioAddress
+                0x0000000000008058                SetGpio
+ .text          0x0000000000008098       0x3c build/main.o
 
-.data           0x0000000000000038        0x0 load address 0x0000000000008000
+.data           0x00000000000080d4        0x0
  *(.data)
- .data          0x0000000000000038        0x0 build/main.o
+ .data          0x00000000000080d4        0x0 build/gpio.o
+ .data          0x00000000000080d4        0x0 build/main.o
 
 /DISCARD/
  *(*)
