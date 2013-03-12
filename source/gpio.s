@@ -5,35 +5,56 @@ GetGpioAddress:
 
 .globl SetGpioFunction
 SetGpioFunction:
-    cmp r0,#53
-    cmpls r1,#7
+    pinNum .req r0
+    pinFunc .req r1
+    cmp pinNum,#53
+    cmpls pinFunc,#7
     movhi pc,lr
+
     push {lr}
-    mov r2,r0
+    mov r2,pinNum
+    .unreq pinNum
+    pinNum .req r2
     bl GetGpioAddress
-    loop$:
-        cmp r2,#9
-        subhi r2,#10
-        addhi r0,#4
-        bhi loop$
-    add r2, r2,lsl #1
-    lsl r1,r2
+    gpioAddr .req r0
 
-    /* Not sure if the following lines are ok */
-    mov r3,#7    /*                 0b111 */
-    lsl r3,r2    /*         0b111(..00..) */
-    mvn r3,r3    /* 0b(..11..)000(..11..) */
-    ldr r2,[r0]
-    and r2,r3
-    orr r1,r2
+    functionLoop$:
+        cmp pinNum,#9
+        subhi pinNum,#10
+        addhi gpioAddr,#4
+        bhi functionLoop$
 
-    str r1,[r0]
+    add pinNum, pinNum,lsl #1
+    lsl pinFunc,pinNum
+
+    mask .req r3
+    mov mask,#7     /* r3 = 111 in binary */
+    lsl mask,pinNum /* r3 = 11100..00 where the 111 is in the same
+                       position as the function in r1 */
+    .unreq pinNum
+
+    mvn mask,mask   /* r3 = 11..1100011..11 where the 000 is in the
+                       same poisiont as the function in r1 */
+    oldFunc .req r2
+    ldr oldFunc,[gpioAddr] /* r2 = existing code */
+    and oldFunc,mask       /* r2 = existing code with bits for this
+                              pin all 0 */
+    .unreq mask
+
+    orr pinFunc,oldFunc    /* r1 = existing code with correct bits
+                              set */
+    .unreq oldFunc
+
+    str pinFunc,[gpioAddr]
+    .unreq pinFunc
+    .unreq gpioAddr
     pop {pc}
 
 .globl SetGpio
 SetGpio:
     pinNum .req r0
     pinVal .req r1
+
     cmp pinNum,#53
     movhi pc,lr
     push {lr}
@@ -42,16 +63,19 @@ SetGpio:
     pinNum .req r2
     bl GetGpioAddress
     gpioAddr .req r0
+
     pinBank .req r3
     lsr pinBank,pinNum,#5
     lsl pinBank,#2
     add gpioAddr,pinBank
     .unreq pinBank
-    add pinNum,#31
+
+    and pinNum,#31
     setBit .req r3
     mov setBit,#1
     lsl setBit,pinNum
     .unreq pinNum
+
     teq pinVal,#0
     .unreq pinVal
     streq setBit,[gpioAddr,#40]
@@ -59,6 +83,3 @@ SetGpio:
     .unreq setBit
     .unreq gpioAddr
     pop {pc}
-
-
-

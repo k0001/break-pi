@@ -21,11 +21,11 @@ Disassembly of section .text:
     8018:	e1a02000 	mov	r2, r0
     801c:	ebfffff7 	bl	8000 <GetGpioAddress>
 
-00008020 <loop$>:
+00008020 <functionLoop$>:
     8020:	e3520009 	cmp	r2, #9	; 0x9
     8024:	8242200a 	subhi	r2, r2, #10	; 0xa
     8028:	82800004 	addhi	r0, r0, #4	; 0x4
-    802c:	8afffffb 	bhi	8020 <loop$>
+    802c:	8afffffb 	bhi	8020 <functionLoop$>
     8030:	e0822082 	add	r2, r2, r2, lsl #1
     8034:	e1a01211 	lsl	r1, r1, r2
     8038:	e3a03007 	mov	r3, #7	; 0x7
@@ -46,7 +46,7 @@ Disassembly of section .text:
     806c:	e1a032a2 	lsr	r3, r2, #5
     8070:	e1a03103 	lsl	r3, r3, #2
     8074:	e0800003 	add	r0, r0, r3
-    8078:	e282201f 	add	r2, r2, #31	; 0x1f
+    8078:	e202201f 	and	r2, r2, #31	; 0x1f
     807c:	e3a03001 	mov	r3, #1	; 0x1
     8080:	e1a03213 	lsl	r3, r3, r2
     8084:	e3310000 	teq	r1, #0	; 0x0
@@ -65,13 +65,19 @@ Disassembly of section .text:
     80a8:	e3a00010 	mov	r0, #16	; 0x10
     80ac:	e3a01000 	mov	r1, #0	; 0x0
     80b0:	ebffffe8 	bl	8058 <SetGpio>
-    80b4:	e3a0283f 	mov	r2, #4128768	; 0x3f0000
+    80b4:	e3a0083f 	mov	r0, #4128768	; 0x3f0000
 
-000080b8 <wait$>:
-    80b8:	e2422001 	sub	r2, r2, #1	; 0x1
-    80bc:	e3520000 	cmp	r2, #0	; 0x0
-    80c0:	1afffffc 	bne	80b8 <wait$>
+000080b8 <wait1$>:
+    80b8:	e2400001 	sub	r0, r0, #1	; 0x1
+    80bc:	e3300000 	teq	r0, #0	; 0x0
+    80c0:	1afffffc 	bne	80b8 <wait1$>
     80c4:	e3a00010 	mov	r0, #16	; 0x10
     80c8:	e3a01001 	mov	r1, #1	; 0x1
     80cc:	ebffffe1 	bl	8058 <SetGpio>
-    80d0:	eafffff4 	b	80a8 <blink_led_loop$>
+    80d0:	e3a0083f 	mov	r0, #4128768	; 0x3f0000
+
+000080d4 <wait2$>:
+    80d4:	e2400001 	sub	r0, r0, #1	; 0x1
+    80d8:	e3300000 	teq	r0, #0	; 0x0
+    80dc:	1afffffc 	bne	80d4 <wait2$>
+    80e0:	eafffff0 	b	80a8 <blink_led_loop$>
