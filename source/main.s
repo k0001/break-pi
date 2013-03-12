@@ -26,15 +26,9 @@ blink_led_loop$:
     .unreq pinNum
     .unreq pinVal
 
-    /* Waste time: decrement the number 0x3f0000 to 0 */
-    decr .req r0
-    mov decr,#0x3F0000
-    wait1$:
-        sub decr,#1
-        teq decr,#0
-        bne wait1$
-    .unreq decr
-
+    /* Wait 1 second */
+    ldr r0,=1000000
+    bl Wait
 
     /* Turn off led by setting the pin HIGH */
     pinNum .req r0
@@ -45,14 +39,9 @@ blink_led_loop$:
     .unreq pinNum
     .unreq pinVal
 
-    /* Waste more time: decrement the number 0x3f0000 to 0 */
-    decr .req r0
-    mov decr,#0x3F0000
-    wait2$:
-        sub decr,#1
-        teq decr,#0
-        bne wait2$
-    .unreq decr
+    /* Wait 0.5 second */
+    ldr r0,=500000
+    bl Wait
 
     b blink_led_loop$
 

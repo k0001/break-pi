@@ -65,19 +65,37 @@ Disassembly of section .text:
     80a8:	e3a00010 	mov	r0, #16	; 0x10
     80ac:	e3a01000 	mov	r1, #0	; 0x0
     80b0:	ebffffe8 	bl	8058 <SetGpio>
-    80b4:	e3a0083f 	mov	r0, #4128768	; 0x3f0000
+    80b4:	e59f0018 	ldr	r0, [pc, #24]	; 80d4 <blink_led_loop$+0x2c>
+    80b8:	eb00000d 	bl	80f4 <Wait>
+    80bc:	e3a00010 	mov	r0, #16	; 0x10
+    80c0:	e3a01001 	mov	r1, #1	; 0x1
+    80c4:	ebffffe3 	bl	8058 <SetGpio>
+    80c8:	e59f0008 	ldr	r0, [pc, #8]	; 80d8 <blink_led_loop$+0x30>
+    80cc:	eb000008 	bl	80f4 <Wait>
+    80d0:	eafffff4 	b	80a8 <blink_led_loop$>
+    80d4:	000f4240 	.word	0x000f4240
+    80d8:	0007a120 	.word	0x0007a120
 
-000080b8 <wait1$>:
-    80b8:	e2400001 	sub	r0, r0, #1	; 0x1
-    80bc:	e3300000 	teq	r0, #0	; 0x0
-    80c0:	1afffffc 	bne	80b8 <wait1$>
-    80c4:	e3a00010 	mov	r0, #16	; 0x10
-    80c8:	e3a01001 	mov	r1, #1	; 0x1
-    80cc:	ebffffe1 	bl	8058 <SetGpio>
-    80d0:	e3a0083f 	mov	r0, #4128768	; 0x3f0000
+000080dc <GetSystemTimerBase>:
+    80dc:	e59f0034 	ldr	r0, [pc, #52]	; 8118 <loop1$+0x14>
+    80e0:	e1a0f00e 	mov	pc, lr
 
-000080d4 <wait2$>:
-    80d4:	e2400001 	sub	r0, r0, #1	; 0x1
-    80d8:	e3300000 	teq	r0, #0	; 0x0
-    80dc:	1afffffc 	bne	80d4 <wait2$>
-    80e0:	eafffff0 	b	80a8 <blink_led_loop$>
+000080e4 <GetTimeStamp>:
+    80e4:	e92d4000 	push	{lr}
+    80e8:	ebfffffb 	bl	80dc <GetSystemTimerBase>
+    80ec:	e1c000d4 	ldrd	r0, [r0, #4]
+    80f0:	e8bd8000 	pop	{pc}
+
+000080f4 <Wait>:
+    80f4:	e1a02000 	mov	r2, r0
+    80f8:	e92d4000 	push	{lr}
+    80fc:	ebfffff8 	bl	80e4 <GetTimeStamp>
+    8100:	e1a03000 	mov	r3, r0
+
+00008104 <loop1$>:
+    8104:	ebfffff6 	bl	80e4 <GetTimeStamp>
+    8108:	e0400003 	sub	r0, r0, r3
+    810c:	e1500002 	cmp	r0, r2
+    8110:	9afffffb 	bls	8104 <loop1$>
+    8114:	e8bd8000 	pop	{pc}
+    8118:	20003000 	.word	0x20003000

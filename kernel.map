@@ -15,6 +15,13 @@ Discarded input sections
  .glue_7t       0x0000000000000000        0x0 build/main.o
  .vfp11_veneer  0x0000000000000000        0x0 build/main.o
  .v4_bx         0x0000000000000000        0x0 build/main.o
+ .bss           0x0000000000000000        0x0 build/systemWait.o
+ .ARM.attributes
+                0x0000000000000000        0x0 build/systemWait.o
+ .glue_7        0x0000000000000000        0x0 build/systemWait.o
+ .glue_7t       0x0000000000000000        0x0 build/systemWait.o
+ .vfp11_veneer  0x0000000000000000        0x0 build/systemWait.o
+ .v4_bx         0x0000000000000000        0x0 build/systemWait.o
 
 Memory Configuration
 
@@ -25,24 +32,30 @@ Linker script and memory map
 
 LOAD build/gpio.o
 LOAD build/main.o
+LOAD build/systemWait.o
 
 .init           0x0000000000000000        0x4
  *(.init)
  .init          0x0000000000000000        0x4 build/main.o
                 0x0000000000000000                _start
 
-.text           0x0000000000008000       0xe4
+.text           0x0000000000008000      0x11c
  *(.text)
  .text          0x0000000000008000       0x98 build/gpio.o
                 0x0000000000008008                SetGpioFunction
                 0x0000000000008000                GetGpioAddress
                 0x0000000000008058                SetGpio
- .text          0x0000000000008098       0x4c build/main.o
+ .text          0x0000000000008098       0x44 build/main.o
+ .text          0x00000000000080dc       0x40 build/systemWait.o
+                0x00000000000080dc                GetSystemTimerBase
+                0x00000000000080f4                Wait
+                0x00000000000080e4                GetTimeStamp
 
-.data           0x00000000000080e4        0x0
+.data           0x000000000000811c        0x0
  *(.data)
- .data          0x00000000000080e4        0x0 build/gpio.o
- .data          0x00000000000080e4        0x0 build/main.o
+ .data          0x000000000000811c        0x0 build/gpio.o
+ .data          0x000000000000811c        0x0 build/main.o
+ .data          0x000000000000811c        0x0 build/systemWait.o
 
 /DISCARD/
  *(*)
