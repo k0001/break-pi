@@ -2,23 +2,13 @@
 Discarded input sections
 
  .ARM.attributes
-                0x0000000000000000        0x0 build/gpio.o
- .glue_7        0x0000000000000000        0x0 build/gpio.o
- .glue_7t       0x0000000000000000        0x0 build/gpio.o
- .vfp11_veneer  0x0000000000000000        0x0 build/gpio.o
- .v4_bx         0x0000000000000000        0x0 build/gpio.o
+                0x0000000000000000       0x16 build/mailbox.o
  .ARM.attributes
-                0x0000000000000000        0x0 build/main.o
- .glue_7        0x0000000000000000        0x0 build/main.o
- .glue_7t       0x0000000000000000        0x0 build/main.o
- .vfp11_veneer  0x0000000000000000        0x0 build/main.o
- .v4_bx         0x0000000000000000        0x0 build/main.o
+                0x0000000000000000       0x16 build/gpio.o
  .ARM.attributes
-                0x0000000000000000        0x0 build/systemWait.o
- .glue_7        0x0000000000000000        0x0 build/systemWait.o
- .glue_7t       0x0000000000000000        0x0 build/systemWait.o
- .vfp11_veneer  0x0000000000000000        0x0 build/systemWait.o
- .v4_bx         0x0000000000000000        0x0 build/systemWait.o
+                0x0000000000000000       0x16 build/main.o
+ .ARM.attributes
+                0x0000000000000000       0x16 build/systemWait.o
 
 Memory Configuration
 
@@ -27,6 +17,7 @@ Name             Origin             Length             Attributes
 
 Linker script and memory map
 
+LOAD build/mailbox.o
 LOAD build/gpio.o
 LOAD build/main.o
 LOAD build/systemWait.o
@@ -36,32 +27,38 @@ LOAD build/systemWait.o
  .init          0x0000000000008000        0x4 build/main.o
                 0x0000000000008000                _start
 
-.text           0x0000000000008004      0x124
+.text           0x0000000000008004      0x198
  *(.text)
- .text          0x0000000000008004       0x98 build/gpio.o
-                0x000000000000800c                SetGpioFunction
-                0x0000000000008004                GetGpioAddress
-                0x000000000000805c                SetGpio
- .text          0x000000000000809c       0x4c build/main.o
- .text          0x00000000000080e8       0x40 build/systemWait.o
-                0x00000000000080e8                GetSystemTimerBase
-                0x0000000000008100                Wait
-                0x00000000000080f0                GetTimeStamp
+ .text          0x0000000000008004       0x74 build/mailbox.o
+                0x0000000000008004                GetMailboxBase
+                0x000000000000800c                MailboxWrite
+                0x000000000000803c                MailboxRead
+ .text          0x0000000000008078       0x98 build/gpio.o
+                0x0000000000008078                GetGpioAddress
+                0x0000000000008080                SetGpioFunction
+                0x00000000000080d0                SetGpio
+ .text          0x0000000000008110       0x4c build/main.o
+ .text          0x000000000000815c       0x40 build/systemWait.o
+                0x000000000000815c                GetSystemTimerBase
+                0x0000000000008164                GetTimeStamp
+                0x0000000000008174                Wait
 
 .rodata
  *(.rodata)
 
-.data           0x0000000000008128        0x4
+.data           0x000000000000819c        0x4
  *(.data)
- .data          0x0000000000008128        0x0 build/gpio.o
- .data          0x0000000000008128        0x4 build/main.o
- .data          0x000000000000812c        0x0 build/systemWait.o
+ .data          0x000000000000819c        0x0 build/mailbox.o
+ .data          0x000000000000819c        0x0 build/gpio.o
+ .data          0x000000000000819c        0x4 build/main.o
+ .data          0x00000000000081a0        0x0 build/systemWait.o
 
-.bss            0x000000000000812c        0x0
+.bss            0x00000000000081a0        0x0
  *(.bss)
- .bss           0x000000000000812c        0x0 build/gpio.o
- .bss           0x000000000000812c        0x0 build/main.o
- .bss           0x000000000000812c        0x0 build/systemWait.o
+ .bss           0x00000000000081a0        0x0 build/mailbox.o
+ .bss           0x00000000000081a0        0x0 build/gpio.o
+ .bss           0x00000000000081a0        0x0 build/main.o
+ .bss           0x00000000000081a0        0x0 build/systemWait.o
 
 /DISCARD/
  *(*)
