@@ -5,43 +5,35 @@ _start:
 
 .section .text
 main:
-    mov sp,#0x800
+    mov sp,#0x8000
 
     /* Ready GPIO pin 16 (led) for output */
-    pinNum .req r0
-    pinFunc .req r1
-    mov pinNum,#16
-    mov pinFunc,#1
+    mov r0,#16
+    mov r1,#1
     bl SetGpioFunction
-    .unreq pinNum
-    .unreq pinFunc
-
-blink_led_loop$:
-    /* Turn on led by setting the pin LOW */
-    pinNum .req r0
-    pinVal .req r1
-    mov pinNum,#16
-    mov pinVal,#0
+    /* Blink pattern setup */
+    ptrn .req r4
+    ldr ptrn,=pattern
+    ldr ptrn,[ptrn]
+    seq .req r5
+    mov seq,#0
+loop$:
+    /* Toggle led according to the given pattern */
+    mov r0,#16
+    mov r1,#1
+    lsl r1,seq
+    and r1,ptrn
     bl SetGpio
-    .unreq pinNum
-    .unreq pinVal
-
-    /* Wait 1 second */
-    ldr r0,=1000000
-    bl Wait
-
-    /* Turn off led by setting the pin HIGH */
-    pinNum .req r0
-    pinVal .req r1
-    mov pinNum,#16
-    mov pinVal,#1
-    bl SetGpio
-    .unreq pinNum
-    .unreq pinVal
-
     /* Wait 0.5 second */
-    ldr r0,=500000
+    ldr r0,=250000
     bl Wait
+    /* Update pattern position */
+    add seq,#1
+    and seq,#0b11111
+    b loop$
 
-    b blink_led_loop$
 
+.section .data
+.align 2
+pattern:
+    .int 0b11111111101010100010001000101010

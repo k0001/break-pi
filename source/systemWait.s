@@ -18,11 +18,11 @@ Wait:
     bl GetTimeStamp
     start .req r3
     mov start,r0
-    loop1$:
+    loop$:
         bl GetTimeStamp
-        sub r0,start
-        cmp r0,delay
-        bls loop1$
+        sub r1,r0,start
+        cmp r1,delay
+        bls loop$
     .unreq delay
     .unreq start
     pop {pc}
