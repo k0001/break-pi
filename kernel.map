@@ -2,6 +2,8 @@
 Discarded input sections
 
  .ARM.attributes
+                0x0000000000000000       0x16 build/video.o
+ .ARM.attributes
                 0x0000000000000000       0x16 build/mailbox.o
  .ARM.attributes
                 0x0000000000000000       0x16 build/gpio.o
@@ -17,6 +19,7 @@ Name             Origin             Length             Attributes
 
 Linker script and memory map
 
+LOAD build/video.o
 LOAD build/mailbox.o
 LOAD build/gpio.o
 LOAD build/main.o
@@ -27,42 +30,50 @@ LOAD build/systemWait.o
  .init          0x0000000000008000        0x4 build/main.o
                 0x0000000000008000                _start
 
-.text           0x0000000000008004      0x198
+.text           0x0000000000008004      0x250
  *(.text)
- .text          0x0000000000008004       0x74 build/mailbox.o
-                0x0000000000008004                GetMailboxBase
-                0x000000000000800c                MailboxWrite
-                0x000000000000803c                MailboxRead
- .text          0x0000000000008078       0x98 build/gpio.o
-                0x0000000000008078                GetGpioAddress
-                0x0000000000008080                SetGpioFunction
-                0x00000000000080d0                SetGpio
- .text          0x0000000000008110       0x4c build/main.o
- .text          0x000000000000815c       0x40 build/systemWait.o
-                0x000000000000815c                GetSystemTimerBase
-                0x0000000000008164                GetTimeStamp
-                0x0000000000008174                Wait
+ .text          0x0000000000008004       0x68 build/video.o
+                0x0000000000008004                InitialiseFrameBuffer
+ .text          0x000000000000806c       0x74 build/mailbox.o
+                0x000000000000806c                GetMailboxBase
+                0x0000000000008074                MailboxWrite
+                0x00000000000080a4                MailboxRead
+ .text          0x00000000000080e0       0x98 build/gpio.o
+                0x00000000000080e0                GetGpioAddress
+                0x00000000000080e8                SetGpioFunction
+                0x0000000000008138                SetGpio
+ .text          0x0000000000008178       0x9c build/main.o
+                0x00000000000081e4                LedBlink
+                0x00000000000081ec                LedOn
+                0x0000000000008200                LedOff
+ .text          0x0000000000008214       0x40 build/systemWait.o
+                0x0000000000008214                GetSystemTimerBase
+                0x000000000000821c                GetTimeStamp
+                0x000000000000822c                Wait
 
 .rodata
  *(.rodata)
 
-.data           0x000000000000819c        0x4
+.data           0x0000000000009000     0x1000
  *(.data)
- .data          0x000000000000819c        0x0 build/mailbox.o
- .data          0x000000000000819c        0x0 build/gpio.o
- .data          0x000000000000819c        0x4 build/main.o
- .data          0x00000000000081a0        0x0 build/systemWait.o
+ .data          0x0000000000009000     0x1000 build/video.o
+                0x0000000000009000                FrameBufferInfo
+ .data          0x000000000000a000        0x0 build/mailbox.o
+ .data          0x000000000000a000        0x0 build/gpio.o
+ .data          0x000000000000a000        0x0 build/main.o
+ .data          0x000000000000a000        0x0 build/systemWait.o
 
-.bss            0x00000000000081a0        0x0
+.bss            0x000000000000a000        0x0
  *(.bss)
- .bss           0x00000000000081a0        0x0 build/mailbox.o
- .bss           0x00000000000081a0        0x0 build/gpio.o
- .bss           0x00000000000081a0        0x0 build/main.o
- .bss           0x00000000000081a0        0x0 build/systemWait.o
+ .bss           0x000000000000a000        0x0 build/video.o
+ .bss           0x000000000000a000        0x0 build/mailbox.o
+ .bss           0x000000000000a000        0x0 build/gpio.o
+ .bss           0x000000000000a000        0x0 build/main.o
+ .bss           0x000000000000a000        0x0 build/systemWait.o
 
 /DISCARD/
  *(*)
-                0x0000000000009000                . = ALIGN (0x1000)
-                0x0000000000019000                . = (. + 0x10000)
-                0x0000000000019000                stackTop = .
+                0x000000000000a000                . = ALIGN (0x1000)
+                0x000000000001a000                . = (. + 0x10000)
+                0x000000000001a000                stackTop = .
 OUTPUT(build/output.elf elf32-littlearm)

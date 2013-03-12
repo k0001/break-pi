@@ -11,29 +11,68 @@ main:
     mov r0,#16
     mov r1,#1
     bl SetGpioFunction
-    /* Blink pattern setup */
-    ptrn .req r4
-    ldr ptrn,=pattern
-    ldr ptrn,[ptrn]
-    seq .req r5
-    mov seq,#0
-loop$:
-    /* Toggle led according to the given pattern */
+    /* Blink led once */
+    bl LedBlink
+
+    /* Initialise video frame buffer */
+    mov r0,#1024
+    mov r1,#768
+    mov r2,#16
+    bl InitialiseFrameBuffer
+    /* Check everything went OK */
+    teq r0,#0
+    bne noError$
+    bl LedOn
+    error$:
+        b error$
+    noError$:
+        fbInfoAddr .req r4
+        mov fbInfoAddr,r0
+
+    render$:
+        fbAddr .req r3
+        ldr fbAddr,[fbInfoAddr,#32]
+        colour .req r0
+        y .req r1
+        mov y,#768
+        drawRow$:
+            x .req r2
+            mov x,#1024
+            drawPixel$:
+                strh colour,[fbAddr]
+                add fbAddr,#2
+                sub x,#1
+                teq x,#0
+                bne drawPixel$
+            sub y,#1
+            add colour,#1
+            teq y,#0
+            bne drawRow$
+    b render$
+
+    .unreq fbAddr
+    .unreq fbInfoAddr
+
+
+.globl LedBlink
+LedBlink:
+    bl LedOn
+    bl LedOff
+
+.globl LedOn
+LedOn:
+    /* Set GPIO pin 16 LOW */
+    push {lr}
     mov r0,#16
     mov r1,#1
-    lsl r1,seq
-    and r1,ptrn
     bl SetGpio
-    /* Wait 0.5 second */
-    ldr r0,=250000
-    bl Wait
-    /* Update pattern position */
-    add seq,#1
-    and seq,#0b11111
-    b loop$
+    pop {pc}
 
-
-.section .data
-.align 2
-pattern:
-    .int 0b11111111101010100010001000101010
+.globl LedOff
+LedOff:
+    /* Set GPIO pin 16 HIGH */
+    push {lr}
+    mov r0,#16
+    mov r1,#1
+    bl SetGpio
+    pop {pc}
